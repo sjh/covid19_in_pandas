@@ -21,9 +21,11 @@ EU_COVID19_CSV = 'https://opendata.ecdc.europa.eu/covid19/casedistribution/csv'
 COVID19_FILENAME = 'covid19.csv'
 
 # G20 Industrial Countries
+'''
 COUNTRIES = ('Russia', 'United_States_of_America', 'United_Kingdom', 'Japan', 'Germany', 'France',
         'India', 'China', 'Canada', 'Italy', 'Brazil', 'South_Africa', 'Mexico', 'Argentina',
         'Turkey', 'Saudi_Arabia', 'South_Korea', 'Indonesia', 'Australia')
+'''
 
 # 歐洲國家 Countries in European.
 '''
@@ -34,7 +36,7 @@ COUNTRIES = ('United_Kingdom', 'Spain', 'Germany', 'Italy', 'France', 'Austria',
 
 
 # 台灣周圍 Countries around Taiwan
-COUNTRIES = ('China', 'Japan', 'Taiwan', 'Vietnam', 'South_Korea', 'Thailand', 'Philippines', 'New_Zealand')
+COUNTRIES = ('China', 'Japan', 'Taiwan', 'Vietnam', 'South_Korea', 'Thailand', 'Philippines', 'Malaysia', 'Singapore', 'New_Zealand')
 
 # 中東國家，中亞 Middle East and Central Asia
 # COUNTRIES = ('Saudi_Arabia', 'Iraq', 'Iran', 'Turkey', 'Israel')
@@ -212,7 +214,7 @@ class ReadCovid19:
 
             confirmed_deaths = self.csv_file[self.csv_file['countriesAndTerritories'] == country].deaths.sum()
             print('{} 確診死亡人數 = {:,}'.format(country, confirmed_deaths))
-            print('{} 確診死亡率 = {} %\n'.format(country, round(confirmed_deaths / confirmed_cases, 4)))
+            print('{} 確診死亡率 = {} %\n'.format(country, round((confirmed_deaths / confirmed_cases) * 100, 4)))
 
     def show_last_date(self):
         print(self.last_date.strftime('公元 %Y 年 %m 月 %d 日'))
