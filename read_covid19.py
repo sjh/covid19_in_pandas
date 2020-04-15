@@ -31,12 +31,23 @@ COUNTRIES = ('Russia', 'United_States_of_America', 'United_Kingdom', 'Japan', 'G
 '''
 COUNTRIES = ('United_Kingdom', 'Spain', 'Germany', 'Italy', 'France', 'Austria', 'Poland',
         'Portugal', 'Sweden', 'Switzerland', 'Finland', 'Greece', 'Greenland', 'Iceland',
-        'Denmark', 'Belgium', 'Netherlands')
+        'Denmark', 'Belgium', 'Netherlands', 'Romania')
 '''
 
 
 # 台灣周圍 Countries around Taiwan
-COUNTRIES = ('China', 'Japan', 'Taiwan', 'Vietnam', 'South_Korea', 'Thailand', 'Philippines', 'Malaysia', 'Singapore', 'New_Zealand')
+COUNTRIES = ('China', 'Japan', 'South_Korea', 'Taiwan', 'Philippines', 'Vietnam', 'Cambodia',
+        'Thailand', 'Malaysia', 'Indonesia', 'Singapore', 'Australia', 'New_Zealand')
+
+# Allies of Taiwan (Republic of China) , referring to https://www.mofa.gov.tw/AlliesIndex.aspx?n=0757912EB2F1C601&sms=26470E539B6FA395
+# Not every ally is found in EU ECDC data set.
+'''
+COUNTRIES = ('Eswatini', 'Holy_See', 'Haiti', 'Honduras', 'Guatemala', 'Belize', 'Paraguay',
+        'Saint_Kitts_and_Nevis', 'Saint_Vincent_and_the_Grenadines', 'Saint_Lucia', 'Taiwan')
+'''
+
+# Countries with Women Leaders
+# COUNTRIES = ('Germany', 'Taiwan', 'New_Zealand', 'Iceland', 'Finland', 'Norway', 'Denmark')
 
 # 中東國家，中亞 Middle East and Central Asia
 # COUNTRIES = ('Saudi_Arabia', 'Iraq', 'Iran', 'Turkey', 'Israel')
@@ -129,7 +140,7 @@ class ReadCovid19:
         self.count()
         self.describe()
 
-    def show_indivisual_country_plot(self):
+    def show_individual_country_plot(self):
         for country in COUNTRIES:
             country_obj = self.csv_file[csv_obj['countriesAndTerritories'] == country]
             ax = country_obj.plot(kind='line', style='--o',  x='dateRep', y=['cases', 'deaths'], title=country, figsize=(14, 6))
@@ -142,6 +153,27 @@ class ReadCovid19:
 
             xlabel = "Date: {} ~ {} (Month/Day)".format(self.first_date.strftime('%Y/%m/%d'), self.last_date.strftime('%Y/%m/%d'))
             ax.set(xlabel=xlabel, ylabel="Number of People", title=country)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
+            ax.xaxis.set_major_locator(AutoLocator())
+            ax.xaxis.set_minor_locator(mdates.DayLocator(interval=1))
+            for label in ax.get_xticklabels():
+                label.set_horizontalalignment('right')
+
+            pylab.show()
+
+            # Plot individual country's accumulative cases and deaths
+            country_obj['cases_sum'] = country_obj['cases'].cumsum()
+            country_obj['deaths_sum'] = country_obj['deaths'].cumsum()
+
+            max_cases = country_obj[country_obj['cases_sum'] == country_obj['cases_sum'].max()]
+            max_deaths = country_obj[country_obj['deaths_sum'] == country_obj['deaths_sum'].max()]
+
+            ax = country_obj.plot(kind='line', style='--o', x='dateRep', y=['cases_sum', 'deaths_sum'], figsize=(14, 6))
+
+            ax.annotate('{:,}'.format(max_cases.cases_sum.values[0]), xy=(max_cases['dateRep'].values[0], max_cases.cases_sum.values[0] + self.ANNOTATE_OFFSET))
+            ax.annotate('{:,}'.format(max_deaths.deaths_sum.values[0]), xy=(max_deaths['dateRep'].values[0], max_deaths.deaths_sum.values[0] + self.ANNOTATE_OFFSET))
+
+            ax.set(xlabel="Date: (Month/Day)", ylabel="Number of People", title='{} Accumulative sum cases/deaths'.format(country))
             ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
             ax.xaxis.set_major_locator(AutoLocator())
             ax.xaxis.set_minor_locator(mdates.DayLocator(interval=1))
@@ -194,7 +226,7 @@ class ReadCovid19:
         '''
             Use matplotlib with pandas bindings to plot charts.
         '''
-        self.show_indivisual_country_plot()
+        self.show_individual_country_plot()
         self.show_global_plot()
 
     def show_numbers(self):
