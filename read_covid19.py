@@ -162,8 +162,9 @@ class ReadCovid19:
             pylab.show()
 
             # Plot individual country's accumulative cases and deaths
-            country_obj['cases_sum'] = country_obj['cases'].cumsum()
-            country_obj['deaths_sum'] = country_obj['deaths'].cumsum()
+            current_columns = len(country_obj.columns)
+            country_obj.insert(current_columns, 'cases_sum', country_obj.cases.cumsum())
+            country_obj.insert(current_columns + 1, 'deaths_sum', country_obj.deaths.cumsum())
 
             max_cases = country_obj[country_obj['cases_sum'] == country_obj['cases_sum'].max()]
             max_deaths = country_obj[country_obj['deaths_sum'] == country_obj['deaths_sum'].max()]
@@ -203,8 +204,9 @@ class ReadCovid19:
         pylab.show()
 
         # Daily groupby cumulative sum of global cases and deaths
-        global_country_frames_sum['cases_sum'] = global_country_frames_sum['cases'].cumsum()
-        global_country_frames_sum['deaths_sum'] = global_country_frames_sum['deaths'].cumsum()
+        current_columns = len(global_country_frames_sum.columns)
+        global_country_frames_sum.insert(current_columns, 'cases_sum', global_country_frames_sum.cases.cumsum())
+        global_country_frames_sum.insert(current_columns + 1, 'deaths_sum', global_country_frames_sum.deaths.cumsum())
 
         max_cases = global_country_frames_sum[global_country_frames_sum['cases_sum'] == global_country_frames_sum['cases_sum'].max()]
         max_deaths = global_country_frames_sum[global_country_frames_sum['deaths_sum'] == global_country_frames_sum['deaths_sum'].max()]
