@@ -4,6 +4,7 @@
     https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
 '''
 
+from collections import OrderedDict
 import datetime
 import locale
 
@@ -20,12 +21,11 @@ import pylab
 EU_COVID19_CSV = 'https://opendata.ecdc.europa.eu/covid19/casedistribution/csv'
 COVID19_FILENAME = 'covid19.csv'
 
+
 # G20 Industrial Countries
-'''
 COUNTRIES = ('Russia', 'United_States_of_America', 'United_Kingdom', 'Japan', 'Germany', 'France',
         'India', 'China', 'Canada', 'Italy', 'Brazil', 'South_Africa', 'Mexico', 'Argentina',
         'Turkey', 'Saudi_Arabia', 'South_Korea', 'Indonesia', 'Australia')
-'''
 
 # 歐洲國家 Countries in European.
 '''
@@ -36,8 +36,10 @@ COUNTRIES = ('United_Kingdom', 'Spain', 'Germany', 'Italy', 'France', 'Austria',
 
 
 # 台灣周圍 Countries around Taiwan
+'''
 COUNTRIES = ('China', 'Japan', 'South_Korea', 'Taiwan', 'Philippines', 'Vietnam', 'Cambodia',
         'Thailand', 'Malaysia', 'Indonesia', 'Singapore', 'Australia', 'New_Zealand')
+'''
 
 # Allies of Taiwan (Republic of China) , referring to https://www.mofa.gov.tw/AlliesIndex.aspx?n=0757912EB2F1C601&sms=26470E539B6FA395
 # Not every ally is found in EU ECDC data set.
@@ -242,13 +244,20 @@ class ReadCovid19:
         print('全球確診病例死亡數 = {:,}'.format(total_deaths))
         print('全球確診病例死亡率 = {} %'.format(round((total_deaths / total_cases) * 100, 2)))
 
+        country_dict = {}
         for country in COUNTRIES:
             confirmed_cases = self.csv_file[self.csv_file['countriesAndTerritories'] == country].cases.sum()
-            print('\n{} 確診病例數 = {:,}'.format(country, confirmed_cases))
 
             confirmed_deaths = self.csv_file[self.csv_file['countriesAndTerritories'] == country].deaths.sum()
+            country_dict[round((confirmed_deaths / confirmed_cases) * 100, 4)] = (country, confirmed_cases, confirmed_deaths)
+
+        country_dict = OrderedDict(sorted(country_dict.items()))
+        for rate in country_dict.keys():
+            country, confirmed_cases, confirmed_deaths = country_dict[rate]
+            print('\n{} 確診病例數 = {:,}'.format(country, confirmed_cases))
             print('{} 確診死亡人數 = {:,}'.format(country, confirmed_deaths))
-            print('{} 確診死亡率 = {} %\n'.format(country, round((confirmed_deaths / confirmed_cases) * 100, 4)))
+            print('{} 確診死亡率 = {} %\n'.format(country, rate))
+
 
     def show_last_date(self):
         print(self.last_date.strftime('公元 %Y 年 %m 月 %d 日'))
