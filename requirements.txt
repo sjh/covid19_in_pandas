@@ -20,5 +20,5 @@ pytz==2019.3
 requests==2.23.0
 six==1.14.0
 traitlets==4.3.3
-urllib3==1.25.8
+urllib3==1.26.5
 wcwidth==0.1.9
